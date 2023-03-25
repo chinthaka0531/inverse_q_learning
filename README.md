@@ -5,9 +5,9 @@ To test the code,
 1) Check the conf.yaml file to set all the settings.
 2) Run collect_dataset.py to collect demontrations.
 >python collect_dataset.py
-4) Run train.py to train an agent
+3) Run train.py to train an agent
 >python train.py -algo iql
-6) Run eval.py to evaluate an trained agent
+4) Run eval.py to evaluate an trained agent
 >python eval.py
 
 
