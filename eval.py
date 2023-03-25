@@ -83,7 +83,11 @@ def create_figures(eval_list, optimal_aps, transition_probabilities, ground_rewa
     for i, eval_path in enumerate(eval_list):
         print(f"Getting value map for: {eval_path}")
 
-        boltz_dis = np.load(os.path.join(eval_path,'boltzman_distribution.npy'))
+        try:
+            boltz_dis = np.load(os.path.join(eval_path,'boltzman_distribution.npy'))
+        except:
+            print(os.path.join(eval_path,'boltzman_distribution.npy'), 'is not found. skipping..')
+            continue
         val_map = get_value_map(boltz_dis, transition_probabilities, ground_reward, thresh, gamma)
         a[0].imshow(opt_val_map.reshape((32,32)))
         a[0].set_title('Optimal')
