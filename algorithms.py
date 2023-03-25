@@ -1,5 +1,3 @@
-import time
-import os
 import numpy as np
 
 def get_boltzman_distribution(q):
@@ -25,6 +23,8 @@ def iavi(feature_matrix, transition_probabilities, action_probabilities, traject
     evd_list = []
     q = None
 
+    # Need to be implemented
+
 
     return q, evd_list, boltzman_distribution
 
@@ -42,45 +42,35 @@ def iql(trajectories, conf):
     alpha_q = conf['iql']['alpha_q']
     alpha_sh = conf['iql']['alpha_sh']
 
-    # initialize tables for reward function, value functions and state-action visitation counter.
     r = np.zeros((nS, nA))
     q = np.zeros((nS, nA))
     q_sh = np.zeros((nS, nA))
-    state_action_visit = np.zeros((nS, nA))
+    state_action_visit_counter = np.zeros((nS, nA))
 
     epsilon_for_log = 1e-10
     r_diff_list = []
 
     for i in range(epochs):
-        if i%10 == 0:
-            print("Epoch %s/%s" %(i+1, epochs))
+        if i%20 == 0:
+            print(f"Epoch {i}")
        
         for traj in trajectories:
-            for (s, a, _, ns) in traj:
-                state_action_visit[s][a] += 1
-                d = 0   # no terminal state
+            for (s, a, _, new_s) in traj:
 
-                # compute shifted q-function.
-                q_sh[s, a] = (1-alpha_sh) * q_sh[s, a] + alpha_sh * (gamma * (1-d) * np.max(q[ns]))
-                
-                # compute log probabilities.
-                state_action_visit_sum = np.sum(state_action_visit[s])
-                log_prob = np.log((state_action_visit[s]/state_action_visit_sum) + epsilon_for_log)
-                
-                # compute eta_a and eta_b for Eq. (9).
-                eta_a = log_prob[a] - q_sh[s][a]
-                other_actions = [oa for oa in range(nA) if oa != a]
-                eta_b = log_prob[other_actions] - q_sh[s][other_actions]
-                sum_oa = (1/(nA-1)) * np.sum(r[s][other_actions] - eta_b)
-
-                # update reward-function.
-                r[s][a] = (1-alpha_r) * r[s][a] + alpha_r * (eta_a + sum_oa)
-
-                # update value-function.
-                q[s, a] = (1-alpha_q) * q[s, a] + alpha_q * (r[s, a] + gamma * (1-d) * np.max(q[ns]))
-                s = ns
+                state_action_visit_counter[s][a] += 1
         
+                q_sh[s, a] = (1-alpha_sh) * q_sh[s, a] + alpha_sh * (gamma * np.max(q[new_s]))
+                state_action_visit_sum = np.sum(state_action_visit_counter[s])
+                log_prob = np.log((state_action_visit_counter[s]/state_action_visit_sum) + epsilon_for_log)
+                other_a = [0,1,2,3,4].remove(a)
 
+                eta_a = log_prob[a] - q_sh[s][a]
+                eta_b = log_prob[other_a] - q_sh[s][other_a]
+                sum_oa = (1/(nA-1)) * np.sum(r[s][other_a] - eta_b)
+                r[s][a] = (1-alpha_r) * r[s][a] + alpha_r * (eta_a + sum_oa)
+                q[s, a] = (1-alpha_q) * q[s, a] + alpha_q * (r[s, a] + gamma  * np.max(q[new_s]))
+                s = new_s
+        
     boltzman_distribution = get_boltzman_distribution(q)
     
     return q, r_diff_list, boltzman_distribution
