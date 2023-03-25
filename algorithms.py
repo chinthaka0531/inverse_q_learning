@@ -2,14 +2,15 @@ import numpy as np
 
 def get_boltzman_distribution(q):
     (nS, nA) = q.shape
-    boltzman_distribution = []
+    bd = []
     for s in range(nS):
-        boltzman_distribution.append([])
-        for a in range(nA):
-            boltzman_distribution[-1].append(np.exp(q[s][a]))
-    boltzman_distribution = np.array(boltzman_distribution)
-    boltzman_distribution /= np.sum(boltzman_distribution, axis=1).reshape(-1, 1)
-    return np.array(boltzman_distribution)
+        bd.append([])
+        for a in range(nA):bd[-1].append(np.exp(q[s][a]))
+        
+    bd = np.array(bd)
+    action_sum = np.sum(bd, axis=1).reshape(-1, 1)
+    bd = bd/action_sum
+    return np.array(bd)
 
 ###### Algorithm 1 ######
 
@@ -47,7 +48,7 @@ def iql(trajectories, conf):
     q_sh = np.zeros((nS, nA))
     state_action_visit_counter = np.zeros((nS, nA))
 
-    epsilon_for_log = 1e-10
+    epsilon_for_log = 1e-4
     r_diff_list = []
 
     for i in range(epochs):

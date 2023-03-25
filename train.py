@@ -25,14 +25,16 @@ def get_conf(conf_path):
 
 def action_probs_from_trajectories(trajectories, nS, nA):
 
-    action_probabilities = np.zeros((nS, nA))
+    aps = np.zeros((nS, nA))
     for traj in trajectories:
-        for (s, a, r, ns) in traj:
-            action_probabilities[s][a] += 1
-    action_probabilities[action_probabilities.sum(axis=1) == 0] = 1e-5
-    action_probabilities /= action_probabilities.sum(axis=1).reshape(nS, 1)
+        for (s, a, _, _) in traj:
+            aps[s][a] += 1
 
-    return action_probabilities
+    aps = aps + 1e-5 # To remove zero elements
+    sum_of_state = aps.sum(axis=1).reshape(nS, 1)
+    aps = aps / sum_of_state
+
+    return aps
 
 
 def load_dataset(data_dir):
