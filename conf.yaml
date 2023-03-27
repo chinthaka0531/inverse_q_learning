@@ -26,9 +26,9 @@ iavi:
 
 #iql configuration
 iql:
-  alpha_r: 0.01
-  alpha_q: 0.01
-  alpha_sh: 0.01
+  alpha_r: 0.001
+  alpha_q: 0.001
+  alpha_sh: 0.001
   epochs: 1000
 
 # Eval configuration
@@ -38,6 +38,13 @@ eval:
     - ./results/iql/run_1
     - ./results/iql/run_2
     - ./results/iql/run_3
+    - ./results/iql/run_4
+    - ./results/iql/run_5
+    - ./results/iavi/run_1
+    - ./results/iavi/run_2
+    - ./results/iavi/run_3
+    - ./results/iavi/run_4
+    - ./results/iavi/run_5
 
 
 

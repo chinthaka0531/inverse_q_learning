@@ -6,7 +6,6 @@ import yaml
 
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd
 
 
 def get_arg_parser():
@@ -78,9 +77,12 @@ def get_value_map(dis, transition_probabilities, ground_r, thresh, gamma):
 def create_figures(eval_list, optimal_aps, transition_probabilities, ground_reward, thresh = 0.01, gamma = 0.99):
     print("Getting value map for: optimal")
     opt_val_map = get_value_map(optimal_aps, transition_probabilities, ground_reward, thresh, gamma)
-    
-    fig,a =  plt.subplots(1,2)
+    grid = int(np.sqrt(transition_probabilities.shape[0]))
+    fig,a =  plt.subplots(1,3)
     for i, eval_path in enumerate(eval_list):
+        a[0].imshow(ground_reward.reshape((grid,grid)))
+        a[0].set_title('Ground Truth Reward')
+
         print(f"Getting value map for: {eval_path}")
 
         try:
@@ -89,12 +91,12 @@ def create_figures(eval_list, optimal_aps, transition_probabilities, ground_rewa
             print(os.path.join(eval_path,'boltzman_distribution.npy'), 'is not found. skipping..')
             continue
         val_map = get_value_map(boltz_dis, transition_probabilities, ground_reward, thresh, gamma)
-        a[0].imshow(opt_val_map.reshape((32,32)))
-        a[0].set_title('Optimal')
+        a[1].imshow(opt_val_map.reshape((grid,grid)))
+        a[1].set_title('Optimal Value')
 
-        name = eval_path.split('/')[-2]
-        a[1].imshow(val_map.reshape((32,32)))
-        a[1].set_title(name)
+        name = eval_path.split('/')[-2]+" Value"
+        a[2].imshow(val_map.reshape((grid,grid)))
+        a[2].set_title(name)
         fig.savefig(os.path.join(eval_path,'val_map.png'))
 
         
