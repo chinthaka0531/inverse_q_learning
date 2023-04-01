@@ -20,6 +20,7 @@ def iavi(feature_matrix, transition_probabilities, action_probabilities, traject
     # q = np.zeros((nS, nA))
     # q_sh = np.zeros((nS, nA))
 
+
     boltzman_distribution = []
     evd_list = []
     q = None
