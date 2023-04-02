@@ -3,6 +3,7 @@ import numpy as np
 import os
 import argparse
 import yaml
+import time
 
 import numpy as np
 from algorithms import iavi, iql
@@ -12,7 +13,7 @@ def get_arg_parser():
 
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("-conf_file", "--conf_file", help="Configuration file path",default="conf.yaml")
-    arg_parser.add_argument("-algo", "--algo", help="Algorithm name",default="iql")
+    arg_parser.add_argument("-algo", "--algo", help="Algorithm name",default="iavi")
 
     return arg_parser
 
@@ -89,10 +90,15 @@ if __name__=="__main__":
     # Training
     print(f"Started training {algo} algorithm")
     if algo == 'iavi':
+        t1 = time.time()
         q, evd_list, boltzman_distribution = iavi(feature_matrix, transition_probabilities, action_probabilities, trajectories, conf)
-
+        t2 = time.time()
+        print("time taken for iavi:", t2-t1)
     elif algo == 'iql':
+        t1 = time.time()
         q, evd_list, boltzman_distribution = iql(trajectories, conf)
+        t2 = time.time()
+        print("time taken for iql:", t2-t1)
 
     else:
         print("Unknown algorithm")
